@@ -1,28 +1,33 @@
 import java.util.HashMap;
 import java.util.Map;
 
-public class Codificador{
-    public enum Tipo {SIMPLES,DESLOCA};
-    private Map<Character,Character> tabCod;
-    private Map<Character,Character> tabDeCod;
 
-    public Codificador(){
+interface EstrategiaCodificacao {
+    String codifica(String str);
+    String decodifica(String str);
+}
+
+class CodSimples implements EstrategiaCodificacao {
+    private Map<Character, Character> tabCod;
+    private Map<Character, Character> tabDeCod;
+
+    public CodSimples() {
         tabCod = new HashMap<>();
         tabCod.put('a','@');
         tabCod.put('e','#');
         tabCod.put('i','!');
         tabCod.put('o','$');
         tabCod.put('u','%');
+
         tabDeCod = new HashMap<>();
         tabDeCod.put('@','a');
         tabDeCod.put('#','e');
         tabDeCod.put('!','i');
         tabDeCod.put('$','o');
         tabDeCod.put('%','u');
-        
     }
 
-    private String codificaSimples(String str){
+    public String codifica(String str) {
         char[] aux = str.toCharArray();
         char[] resp = new char[str.length()];
         for(int i=0;i<aux.length;i++){
@@ -35,7 +40,7 @@ public class Codificador{
         return(new String(resp));
     }
 
-    private String deCodificaSimples(String str){
+    public String decodifica(String str) {
         char[] aux = str.toCharArray();
         char[] resp = new char[str.length()];
         for(int i=0;i<aux.length;i++){
@@ -47,8 +52,10 @@ public class Codificador{
         }
         return(new String(resp));
     }
+}
 
-    private String codificaDesloca(String str){
+class CodDesloca implements EstrategiaCodificacao {
+    public String codifica(String str) {
         char[] aux = str.toCharArray();
         char[] resp = new char[str.length()];
         for(int i=0;i<aux.length;i++){
@@ -57,7 +64,7 @@ public class Codificador{
         return(new String(resp));
     }
 
-    private String deCodificaDesloca(String str){
+    public String decodifica(String str) {
         char[] aux = str.toCharArray();
         char[] resp = new char[str.length()];
         for(int i=0;i<aux.length;i++){
@@ -65,27 +72,24 @@ public class Codificador{
         }
         return(new String(resp));
     }
+}
 
-    public String codifica(Tipo tipo,String str){
-        switch(tipo){
-            case SIMPLES:
-                return codificaSimples(str);
-            case DESLOCA:
-                return codificaDesloca(str);
-            default:
-                return str;
-        }
+public class Codificador{
+    private EstrategiaCodificacao estrategia;
+
+    public Codificador(EstrategiaCodificacao estrategia) {
+        this.estrategia = estrategia;
     }
 
-    public String deCodifica(Tipo tipo,String str){
-        switch(tipo){
-            case SIMPLES:
-                return deCodificaSimples(str);
-            case DESLOCA:
-                return deCodificaDesloca(str);
-            default:
-                return str;
-        }
+    public void setEstrategia(EstrategiaCodificacao estrategia) {
+        this.estrategia = estrategia;
     }
 
+    public String codifica(String str){
+        return estrategia.codifica(str);
+    }
+
+    public String deCodifica(String str){
+        return estrategia.decodifica(str);
+    }
 }
